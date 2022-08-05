@@ -1,9 +1,10 @@
 /**
  * 
  * Possible improvements:
+ * 
  *		both move keys held at once, when one is released the paddle is motionless
- *				MAke PADDLE_MOVE_SPEED for initial sped value, new variable that increases by one each bounce (checkPaddleBounce()) reset speed in checkWallBounce() if it touches left of right of screen
- * 		Ball speeds up after bouncing of paddle
+ *
+ * 		Fix scoring and win text attributed to wrong player
  * 
  * 
  * 
@@ -27,7 +28,7 @@ public class PongPanel extends JPanel implements ActionListener, KeyListener {
 	// Set constant variables
 	
 	private final int BALL_MOVE_SPEED = 4;
-	private final int PADDLE_MOVE_SPEED = 6;
+	private final int PADDLE_MOVE_SPEED = 8;
 	private final int SCORE_X_PADDING = 100;
 	private final int SCORE_Y_PADDING = 100;
 	private final int SCORE_FONT_PADDING = 50;
@@ -35,8 +36,9 @@ public class PongPanel extends JPanel implements ActionListener, KeyListener {
 	private final int WIN_X_PADDING = 200;
 	private final int WIN_Y_PADDING = 200;
 	private final static int POINTS_TO_WIN = 11;
-	private final Color BACKGROUND_COLOUR = Color.WHITE;
+	private final Color BACKGROUND_COLOUR = Color.BLACK;
 	private final int TIMER_DELAY = 5;
+	int ballCurrentSpeed;
 	
 	
 	GameState gameState = GameState.INITIALISING;
@@ -107,6 +109,7 @@ public class PongPanel extends JPanel implements ActionListener, KeyListener {
 				gameState = GameState.PLAYING;
 				ball.setxVelocity(BALL_MOVE_SPEED);
 				ball.setyVelocity(BALL_MOVE_SPEED);
+				ballCurrentSpeed = BALL_MOVE_SPEED;
 				break;
 				}
 				case PLAYING: {
@@ -162,15 +165,15 @@ public class PongPanel extends JPanel implements ActionListener, KeyListener {
 		obj.setyPosition(obj.getyPosition() + obj.getyVelocity(), getHeight());
 	}
 	private void checkWallBounce() {
-		if (ball.getxPosition() <= 0) {
-			ball.setxVelocity(ball.getxVelocity() * -1);
-			addScore(Player.ONE);
-			resetBall();
-		}
-		else if(ball.getxPosition() >= getWidth() - ball.getWidth()) {
+		if (ball.getxPosition() <= 0) { // Left wall bounce
 			ball.setxVelocity(ball.getxVelocity() * -1);
 			addScore(Player.TWO);
-			resetBall();
+			resetBall(Player.ONE);
+		}
+		else if(ball.getxPosition() >= getWidth() - ball.getWidth()) { // Right ball bounce
+			ball.setxVelocity(ball.getxVelocity() * -1);
+			addScore(Player.ONE);
+			resetBall(Player.TWO); 
 		}
 		
 		if (ball.getyPosition() <= 0 || ball.getyPosition() >= getHeight() - ball.getHeight()) {
@@ -178,15 +181,26 @@ public class PongPanel extends JPanel implements ActionListener, KeyListener {
 		}
 		
 	}
-	private void resetBall() {
-		ball.resetToInitialPosition();
+	private void resetBall(Player player) {
+		if (player == Player.ONE) {
+			ball.setxVelocity(BALL_MOVE_SPEED);
+			ballCurrentSpeed = BALL_MOVE_SPEED;
+			ball.resetToInitialPosition();
+	}
+		else if (player ==Player.TWO) {
+			ball.setxVelocity(-BALL_MOVE_SPEED);
+			ballCurrentSpeed = BALL_MOVE_SPEED;
+			ball.resetToInitialPosition();
+			}
 	}
 	private void checkPaddleBounce() {
 		if (ball.getxVelocity() < 0 && ball.getRectangle().intersects(paddle1.getRectangle())) {
-			ball.setxVelocity(BALL_MOVE_SPEED);
+			ballCurrentSpeed++;
+			ball.setxVelocity(ballCurrentSpeed);
 		}
 		if (ball.getxVelocity() > 0 && ball.getRectangle().intersects(paddle2.getRectangle())) {
-			ball.setxVelocity(-BALL_MOVE_SPEED);
+			ballCurrentSpeed++;
+			ball.setxVelocity(-ballCurrentSpeed);
 		}
 	}
 	private void addScore(Player player){
