@@ -28,7 +28,7 @@ public class PongPanel extends JPanel implements ActionListener, KeyListener {
 	// Set constant variables
 	
 	private final int BALL_MOVE_SPEED = 4;
-	private final int PADDLE_MOVE_SPEED = 6;
+	private final int PADDLE_MOVE_SPEED = 8;
 	private final int SCORE_X_PADDING = 100;
 	private final int SCORE_Y_PADDING = 100;
 	private final int SCORE_FONT_PADDING = 50;
@@ -167,13 +167,13 @@ public class PongPanel extends JPanel implements ActionListener, KeyListener {
 	private void checkWallBounce() {
 		if (ball.getxPosition() <= 0) { // Left wall bounce
 			ball.setxVelocity(ball.getxVelocity() * -1);
-			addScore(Player.ONE);
+			addScore(Player.TWO);
 			resetBall(Player.ONE);
 		}
 		else if(ball.getxPosition() >= getWidth() - ball.getWidth()) { // Right ball bounce
 			ball.setxVelocity(ball.getxVelocity() * -1);
-			addScore(Player.TWO);
-			resetBall(Player.TWO);
+			addScore(Player.ONE);
+			resetBall(Player.TWO); 
 		}
 		
 		if (ball.getyPosition() <= 0 || ball.getyPosition() >= getHeight() - ball.getHeight()) {
